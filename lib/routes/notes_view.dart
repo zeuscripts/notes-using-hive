@@ -3,7 +3,10 @@ import 'package:hive_flutter/hive_flutter.dart';
 import 'package:notes_with_hive/model/note_model.dart';
 import 'package:notes_with_hive/routes.dart';
 import 'package:notes_with_hive/routes/single_note_view.dart';
+import 'package:notes_with_hive/themes/theme_data.dart';
+import 'package:notes_with_hive/themes/theme_provider.dart';
 import 'package:notes_with_hive/widgets/notes_card.dart';
+import 'package:provider/provider.dart';
 
 class NotesView extends StatefulWidget {
   const NotesView({super.key});
@@ -14,7 +17,6 @@ class NotesView extends StatefulWidget {
 
 class _NotesViewState extends State<NotesView> {
   final TextEditingController _searchController = TextEditingController();
-
   bool _isSearching = false;
   String _sortType = "Date Updated";
 
@@ -50,18 +52,19 @@ class _NotesViewState extends State<NotesView> {
   }
 
   // Function to show sorting options
-  void _showSortOptions() {
+  void _showSortOptions(ThemeData themeData) {
+    final colorScheme = themeData.colorScheme;
     showModalBottomSheet(
-      backgroundColor: Colors.grey[900],
+      backgroundColor: colorScheme.surface,
       context: context,
       builder: (context) {
         return Wrap(
           children: [
             ListTile(
-              title: const Text(
+              title: Text(
                 "Sort by Date Created",
                 style: TextStyle(
-                  color: Colors.white,
+                  color: colorScheme.secondary,
                   fontSize: 20,
                 ),
               ),
@@ -71,10 +74,10 @@ class _NotesViewState extends State<NotesView> {
               },
             ),
             ListTile(
-              title: const Text(
+              title: Text(
                 "Sort by Date Updated",
                 style: TextStyle(
-                  color: Colors.white,
+                  color: colorScheme.secondary,
                   fontSize: 20,
                 ),
               ),
@@ -84,10 +87,10 @@ class _NotesViewState extends State<NotesView> {
               },
             ),
             ListTile(
-              title: const Text(
+              title: Text(
                 "Sort A-Z",
                 style: TextStyle(
-                  color: Colors.white,
+                  color: colorScheme.secondary,
                   fontSize: 20,
                 ),
               ),
@@ -97,10 +100,10 @@ class _NotesViewState extends State<NotesView> {
               },
             ),
             ListTile(
-              title: const Text(
+              title: Text(
                 "Sort Z-A",
                 style: TextStyle(
-                  color: Colors.white,
+                  color: colorScheme.secondary,
                   fontSize: 20,
                 ),
               ),
@@ -117,21 +120,26 @@ class _NotesViewState extends State<NotesView> {
 
   @override
   Widget build(BuildContext context) {
+    // Get the themeData and colorScheme from the provider
+    final themeData = Provider.of<ThemeProvider>(context).themeData;
+    final colorScheme = themeData.colorScheme;
+    var themeProvider = Provider.of<ThemeProvider>(context);
+
     return Scaffold(
-      backgroundColor: Colors.grey[900],
+      backgroundColor: colorScheme.surface,
       appBar: AppBar(
         automaticallyImplyLeading: false,
-        backgroundColor: Colors.black,
-        foregroundColor: Colors.white,
+        backgroundColor: colorScheme.primary,
+        foregroundColor: colorScheme.secondary,
         centerTitle: true,
         title: _isSearching
             ? TextField(
                 controller: _searchController,
                 onChanged: (value) => setState(() {}),
-                style: const TextStyle(color: Colors.white),
-                decoration: const InputDecoration(
+                style: TextStyle(color: colorScheme.primary),
+                decoration: InputDecoration(
                   hintText: "Search notes...",
-                  hintStyle: TextStyle(color: Colors.white54),
+                  hintStyle: TextStyle(color: colorScheme.primary),
                   border: InputBorder.none,
                 ),
               )
@@ -147,8 +155,15 @@ class _NotesViewState extends State<NotesView> {
             },
           ),
           IconButton(
-            onPressed: _showSortOptions, // Show sorting options
+            onPressed: () => _showSortOptions(themeData), // Pass themeData
             icon: const Icon(Icons.sort),
+          ),
+          Switch(
+            activeColor: colorScheme.secondary,
+            value: themeProvider.themeData == darkTheme,
+            onChanged: (value) {
+              themeProvider.toggleTheme();
+            },
           ),
         ],
       ),
@@ -168,10 +183,10 @@ class _NotesViewState extends State<NotesView> {
             List<Note> displayedNotes = _getSortedNotes(filteredNotes);
 
             if (displayedNotes.isEmpty) {
-              return const Center(
+              return Center(
                 child: Text(
                   'No notes found!',
-                  style: TextStyle(color: Colors.white, fontSize: 18),
+                  style: TextStyle(color: colorScheme.secondary, fontSize: 18),
                 ),
               );
             }
@@ -207,14 +222,14 @@ class _NotesViewState extends State<NotesView> {
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        backgroundColor: Colors.black,
+        backgroundColor: colorScheme.primary,
         onPressed: () {
           Navigator.pushNamed(context, RouteManager.addNote);
         },
-        child: const Icon(
+        child: Icon(
           Icons.add,
           size: 30,
-          color: Colors.white,
+          color: colorScheme.secondary,
         ),
       ),
     );

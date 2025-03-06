@@ -1,18 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:notes_with_hive/model/note_model.dart';
 import 'package:notes_with_hive/service.dart/notes_service.dart';
+import 'package:notes_with_hive/themes/theme_provider.dart';
+import 'package:provider/provider.dart'; // For ThemeProvider
 
 class NoteCard extends StatelessWidget {
   final Note note;
-  final int index; // Add index here
+  final int index;
   final VoidCallback onPressed;
   final NotesService _notesService = NotesService();
 
-  NoteCard(
-      {required this.note,
-      required this.index,
-      required this.onPressed,
-      super.key});
+  NoteCard({
+    required this.note,
+    required this.index,
+    required this.onPressed,
+    super.key,
+  });
 
   void _deleteNote(BuildContext context) async {
     showDialog(
@@ -41,14 +44,16 @@ class NoteCard extends StatelessWidget {
             ),
             TextButton(
               onPressed: () async {
-                await _notesService.deleteNote(index); // Pass the correct index
+                await _notesService.deleteNote(index);
                 Navigator.pop(context);
               },
-              child: const Text("Delete",
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 18,
-                  )),
+              child: const Text(
+                "Delete",
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 18,
+                ),
+              ),
             ),
           ],
         );
@@ -58,38 +63,52 @@ class NoteCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Access the current theme data from the provider
+    final themeData = Provider.of<ThemeProvider>(context).themeData;
+    final colorScheme = themeData.colorScheme;
+
     return GestureDetector(
       onTap: onPressed,
-      onLongPress: () => _deleteNote(context), // Trigger delete on long press
+      onLongPress: () => _deleteNote(context),
       child: Card(
-        color: Colors.black54,
+        color: colorScheme.primary, // Using dynamic surface color from theme
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(10),
         ),
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(
-                note.title,
-                style: const TextStyle(
-                  fontSize: 22,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
+          child: SizedBox(
+            width: double.infinity, // Ensures the card expands properly
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  note.title,
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    color: colorScheme.secondary,
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                 ),
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-              ),
-              const SizedBox(height: 7),
-              Text(
-                note.content,
-                style: const TextStyle(fontSize: 18, color: Colors.white70),
-                maxLines: 7,
-                overflow: TextOverflow.ellipsis,
-              ),
-            ],
+                const SizedBox(height: 7),
+                Flexible(
+                  // Prevents text from overflowing
+                  child: Text(
+                    note.content, // Ensure you're using the correct field name
+                    style: TextStyle(
+                      fontSize: 18,
+                      color: colorScheme
+                          .secondary, // Using dynamic secondary color from theme
+                    ),
+                    maxLines: 7,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),

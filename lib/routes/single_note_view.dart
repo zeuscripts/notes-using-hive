@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:notes_with_hive/model/note_model.dart';
 import 'package:notes_with_hive/service.dart/notes_service.dart';
+import 'package:notes_with_hive/themes/theme_provider.dart';
+import 'package:provider/provider.dart';
 
 class SingleNoteView extends StatefulWidget {
   final Note note;
@@ -26,8 +28,10 @@ class _SingleNoteViewState extends State<SingleNoteView> {
 
   @override
   Widget build(BuildContext context) {
+    final themeData = Provider.of<ThemeProvider>(context).themeData;
+    final colorScheme = themeData.colorScheme;
     return Scaffold(
-      backgroundColor: Colors.grey[900],
+      backgroundColor: colorScheme.surface,
       floatingActionButton: FloatingActionButton(
         onPressed: () async {
           DateTime now = DateTime.now();
@@ -41,16 +45,16 @@ class _SingleNoteViewState extends State<SingleNoteView> {
 
           Navigator.pop(context); // Close the screen
         },
-        backgroundColor: Colors.black,
-        foregroundColor: Colors.white,
+        backgroundColor: colorScheme.primary,
+        foregroundColor: colorScheme.secondary,
         child: const Icon(
           Icons.check,
           size: 30,
         ),
       ),
       appBar: AppBar(
-        backgroundColor: Colors.black,
-        foregroundColor: Colors.white,
+        backgroundColor: colorScheme.primary,
+        foregroundColor: colorScheme.secondary,
         automaticallyImplyLeading: false,
         title: TextField(
           controller: _titleController,
@@ -58,10 +62,10 @@ class _SingleNoteViewState extends State<SingleNoteView> {
             border: OutlineInputBorder(borderSide: BorderSide.none),
             hintText: 'Note Title',
           ),
-          style: const TextStyle(
+          style: TextStyle(
             fontWeight: FontWeight.w500,
             fontSize: 23.72,
-            color: Colors.white,
+            color: colorScheme.secondary,
           ),
         ),
         actions: [
@@ -71,22 +75,23 @@ class _SingleNoteViewState extends State<SingleNoteView> {
                 context: context,
                 builder: (BuildContext context) {
                   return AlertDialog(
-                    backgroundColor: Colors.black,
-                    title: const Text(
+                    backgroundColor: colorScheme.primary,
+                    title: Text(
                       "Delete Note",
-                      style: TextStyle(color: Colors.white),
+                      style: TextStyle(color: colorScheme.secondary),
                     ),
-                    content: const Text(
+                    content: Text(
                       "This cannot be reversed",
-                      style: TextStyle(color: Colors.white, fontSize: 18),
+                      style:
+                          TextStyle(color: colorScheme.secondary, fontSize: 18),
                     ),
                     actions: [
                       TextButton(
                         onPressed: () => Navigator.pop(context),
-                        child: const Text(
+                        child: Text(
                           "Cancel",
                           style: TextStyle(
-                            color: Colors.white,
+                            color: colorScheme.secondary,
                             fontSize: 18,
                           ),
                         ),
@@ -96,10 +101,10 @@ class _SingleNoteViewState extends State<SingleNoteView> {
                           await _notesService.deleteNote(widget.index);
                           Navigator.pushNamed(context, '/');
                         },
-                        child: const Text(
+                        child: Text(
                           "Delete",
                           style: TextStyle(
-                            color: Colors.white,
+                            color: colorScheme.secondary,
                             fontSize: 18,
                           ),
                         ),
@@ -125,34 +130,34 @@ class _SingleNoteViewState extends State<SingleNoteView> {
               bool? confirmExit = await showDialog(
                 context: context,
                 builder: (context) => AlertDialog(
-                  backgroundColor: Colors.grey[900],
-                  title: const Text("Unsaved Changes",
+                  backgroundColor: colorScheme.surface,
+                  title: Text("Unsaved Changes",
                       style: TextStyle(
-                        color: Colors.white,
+                        color: colorScheme.secondary,
                       )),
-                  content: const Text(
+                  content: Text(
                       "You have unsaved changes. Do you want to leave without saving?",
                       style: TextStyle(
-                        color: Colors.white,
+                        color: colorScheme.secondary,
                       )),
                   actions: [
                     TextButton(
                       onPressed: () =>
                           Navigator.pop(context, false), // Stay on the page
-                      child: const Text(
+                      child: Text(
                         "Cancel",
                         style: TextStyle(
-                          color: Colors.white,
+                          color: colorScheme.secondary,
                         ),
                       ),
                     ),
                     TextButton(
                       onPressed: () =>
                           Navigator.pop(context, true), // Leave without saving
-                      child: const Text(
+                      child: Text(
                         "Leave",
                         style: TextStyle(
-                          color: Colors.white,
+                          color: colorScheme.secondary,
                         ),
                       ),
                     ),
@@ -169,29 +174,36 @@ class _SingleNoteViewState extends State<SingleNoteView> {
               Navigator.pop(context);
             }
           },
-          color: Colors.white,
+          color: colorScheme.secondary,
         ),
       ),
-      body: SizedBox(
-        height: MediaQuery.of(context).size.height * 0.7, // Keeps 70% height
-        child: GestureDetector(
-          onTap: () {
-            FocusScope.of(context)
-                .requestFocus(FocusNode()); // Ensures keyboard opens
-          },
-          child: TextField(
-            showCursor: true,
-            maxLines: null,
-            controller: _contentController,
-            style: const TextStyle(
-              color: Colors.white,
-              fontSize: 20,
-              fontWeight: FontWeight.w400,
-            ),
-            decoration: const InputDecoration(
-              border: OutlineInputBorder(borderSide: BorderSide.none),
-              hintText: 'Note Content',
-            ),
+      body: GestureDetector(
+        onTap: () {
+          FocusScope.of(context)
+              .requestFocus(FocusNode()); // Ensures keyboard opens
+        },
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Expanded(
+                child: TextField(
+                  showCursor: true,
+                  maxLines: null,
+                  controller: _contentController,
+                  style: TextStyle(
+                    color: colorScheme.secondary,
+                    fontSize: 20,
+                    fontWeight: FontWeight.w400,
+                  ),
+                  decoration: const InputDecoration(
+                    border: OutlineInputBorder(borderSide: BorderSide.none),
+                    hintText: 'Note Content',
+                  ),
+                ),
+              ),
+            ],
           ),
         ),
       ),

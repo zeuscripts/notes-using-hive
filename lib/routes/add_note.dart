@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:notes_with_hive/model/note_model.dart';
 import 'package:notes_with_hive/service.dart/notes_service.dart';
+import 'package:notes_with_hive/themes/theme_provider.dart';
+import 'package:provider/provider.dart';
 
 class AddNote extends StatefulWidget {
   const AddNote({super.key});
@@ -24,10 +26,12 @@ class _AddNoteState extends State<AddNote> {
 
   @override
   Widget build(BuildContext context) {
+    final themeData = Provider.of<ThemeProvider>(context).themeData;
+    final colorScheme = themeData.colorScheme;
     return Scaffold(
-      backgroundColor: Colors.grey[900],
+      backgroundColor: colorScheme.surface,
       floatingActionButton: FloatingActionButton(
-        backgroundColor: Colors.black,
+        backgroundColor: colorScheme.primary,
         onPressed: () {
           if (_titleController.text.trim().isEmpty &&
               _contentController.text.trim().isEmpty) {
@@ -53,7 +57,7 @@ class _AddNoteState extends State<AddNote> {
         ),
       ),
       appBar: AppBar(
-        backgroundColor: Colors.black,
+        backgroundColor: colorScheme.primary,
         foregroundColor: Colors.white,
         title: TextField(
           controller: _titleController,
@@ -74,16 +78,15 @@ class _AddNoteState extends State<AddNote> {
               context: context,
               builder: (BuildContext context) {
                 return AlertDialog(
-                  backgroundColor: Colors.grey[900],
-                  title: const Text("Discard Note?",
-                      style: TextStyle(color: Colors.white)),
-                  content: const Text(
-                      "Are you sure you want to discard this note?",
-                      style: TextStyle(color: Colors.white70)),
+                  backgroundColor: colorScheme.surface,
+                  title: Text("Discard Note?",
+                      style: TextStyle(color: colorScheme.secondary)),
+                  content: Text("Are you sure you want to discard this note?",
+                      style: TextStyle(color: colorScheme.secondary)),
                   actions: [
                     TextButton(
-                      child: const Text("Discard",
-                          style: TextStyle(color: Colors.white)),
+                      child: Text("Discard",
+                          style: TextStyle(color: colorScheme.secondary)),
                       onPressed: () {
                         Navigator.pop(context); // Close dialog
                         Navigator.pop(context); // Go back to previous screen
@@ -91,7 +94,7 @@ class _AddNoteState extends State<AddNote> {
                     ),
                     TextButton(
                       child: Text(action(),
-                          style: const TextStyle(color: Colors.white)),
+                          style: TextStyle(color: colorScheme.secondary)),
                       onPressed: () {
                         if (_titleController.text.trim().isEmpty &&
                             _contentController.text.trim().isEmpty) {
@@ -117,10 +120,10 @@ class _AddNoteState extends State<AddNote> {
               },
             );
           },
-          icon: const Icon(
+          icon: Icon(
             Icons.arrow_back_ios_new,
             size: 26,
-            color: Colors.white,
+            color: colorScheme.secondary,
           ),
         ),
       ),

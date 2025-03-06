@@ -38,6 +38,7 @@ class _SplashViewState extends State<SplashView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.black,
       appBar: null,
       body: SafeArea(
         child: Center(
@@ -54,6 +55,7 @@ class _SplashViewState extends State<SplashView> {
                   child: const Text(
                     'Notable',
                     style: TextStyle(
+                      color: Colors.white,
                       fontSize: 39,
                       fontWeight: FontWeight.bold,
                     ),
@@ -68,6 +70,7 @@ class _SplashViewState extends State<SplashView> {
                   'Offline | Reliable | Secure',
                   style: TextStyle(
                     fontSize: 24,
+                    color: Colors.white,
                     fontWeight: FontWeight.w300,
                   ),
                 ),
